@@ -1,5 +1,5 @@
 {% set name = "rattler-build" %}
-{% set version = "0.21.0" %}
+{% set version = "0.22.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,21 +7,17 @@ package:
 
 source:
   url: https://github.com/prefix-dev/rattler-build/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: e86fc090a2798e1c2dcda8f9e03964f35dcf5f7a0377a5efb577ca2e5f32834f
+  sha256: 254a8c8defb7196c3a29fad7eec6a9c27c9df14f77bbe6bd9e0efef29885ca88
 
 build:
   script:
     # Unix recipe
-    - export OPENSSL_DIR="$PREFIX"                                            # [unix]
-    - cargo install --locked --bin rattler-build --root ${PREFIX} --path .    # [unix]
+    - export OPENSSL_DIR="$PREFIX"                                                      # [unix]
+    - cargo install --locked --bin rattler-build --root ${PREFIX} --path . --no-track   # [unix]
     - cargo-bundle-licenses --format yaml --output ${SRC_DIR}/THIRDPARTY.yml  # [unix]
-    - rm $PREFIX/.crates2.json                                                # [unix]
-    - rm $PREFIX/.crates.toml                                                 # [unix]
     # Win recipe
-    - cargo install --locked --bins --root %PREFIX% --path .                  # [win]
+    - cargo install --locked --bins --root %PREFIX% --path . --no-track       # [win]
     - cargo-bundle-licenses --format yaml --output %SRC_DIR%/THIRDPARTY.yml   # [win]
-    - del %PREFIX%\.crates2.json                                              # [win]
-    - del %PREFIX%\.crates.toml                                               # [win]
   number: 0
   # disable binary prefix detection, because rattler-build encodes the old `anaconda1anaconda2anaconda3` prefix
   # somewhere to make old packages installable. In other words, conda-build finds a false-positive here.
