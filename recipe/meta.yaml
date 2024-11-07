@@ -16,9 +16,9 @@ build:
     - cargo install --locked --bin rattler-build --root ${PREFIX} --path . --no-track   # [unix]
     - cargo-bundle-licenses --format yaml --output ${SRC_DIR}/THIRDPARTY.yml  # [unix]
     # Win recipe
-    - cargo install --locked --bins --root %PREFIX% --path . --no-track       # [win]
+    - cargo install --locked --bin rattler-build --root %PREFIX% --path . --no-track       # [win]
     - cargo-bundle-licenses --format yaml --output %SRC_DIR%/THIRDPARTY.yml   # [win]
-  number: 0
+  number: 1
   # disable binary prefix detection, because rattler-build encodes the old `anaconda1anaconda2anaconda3` prefix
   # somewhere to make old packages installable. In other words, conda-build finds a false-positive here.
   detect_binary_files_with_prefix: false
