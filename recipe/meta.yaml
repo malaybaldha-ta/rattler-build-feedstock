@@ -16,7 +16,7 @@ build:
     - cargo install --locked --bin rattler-build --root ${PREFIX} --path . --no-track   # [unix]
     - cargo-bundle-licenses --format yaml --output ${SRC_DIR}/THIRDPARTY.yml  # [unix]
     # Win recipe
-    - cargo install --locked --bins --root %PREFIX% --path . --no-track       # [win]
+    - cargo install --locked --bin rattler-build --root %PREFIX% --path . --no-track       # [win]
     - cargo-bundle-licenses --format yaml --output %SRC_DIR%/THIRDPARTY.yml   # [win]
   number: 0
   # disable binary prefix detection, because rattler-build encodes the old `anaconda1anaconda2anaconda3` prefix
