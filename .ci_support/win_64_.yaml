@@ -7,6 +7,6 @@ channel_targets:
 rust_compiler:
 - rust
 rust_compiler_version:
-- 1.80.0
+- 1.81.0
 target_platform:
 - win-64
