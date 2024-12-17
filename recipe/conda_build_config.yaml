@@ -1,6 +1,6 @@
 # We pin the compiler version to the same version as the one pinned in the repository
 rust_compiler_version:
-- 1.80.0
+  - 1.81.0
 # Use a newer version of the SDK to fix the virtual package detection for macOS
 # Otherwise `SYSTEM_VERSION_COMPAT` needs to be set to `0` to detect the proper macOS version
 MACOSX_SDK_VERSION:            # [osx and x86_64]
