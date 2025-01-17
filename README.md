@@ -11,11 +11,10 @@ Summary: rattler-build is the universal conda package builder for Windows, macOS
 
 Documentation: https://prefix-dev.github.io/rattler-build
 
-The rattler-build tooling and library creates cross-platform relocatable binaries / packages
+The rattler-build tooling and library creates cross-platform relocatable binaries / packages 
 from a simple recipe format.
 The recipe format is heavily inspired by conda-build and boa, and the output of a regular
 rattler-build run is a package that can be installed using mamba, conda or rattler.
-
 
 Current build status
 ====================
