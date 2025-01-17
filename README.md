@@ -9,7 +9,7 @@ Package license: BSD-3-Clause
 
 Summary: rattler-build is the universal conda package builder for Windows, macOS and Linux
 
-Documentation: https://prefix-dev.github.io/rattler-build
+Documentation: https://rattler.build/
 
 The rattler-build tooling and library creates cross-platform relocatable binaries / packages 
 from a simple recipe format.
