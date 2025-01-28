@@ -1,6 +1,6 @@
 context:
   name: rattler-build
-  version: "0.35.6"
+  version: "0.35.7"
 
 package:
   name: ${{ name }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/prefix-dev/rattler-build/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: c978c372d25fc29c922e7af82deb15337bc3961721ca3fb5da3804f460a4b02e
+  sha256: 37cc3b3d7f09d09d59fa2beba939d99404d9b94c4b822443ffb4da2623df4eaf
 
 build:
   script:
@@ -38,11 +38,11 @@ requirements:
 
 tests:
   - script:
-    - rattler-build --help
+      - rattler-build --help
     # check that `bin/generate-cli-docs` is not present
-    - if: unix
-      then:
-        - test ! -f ${PREFIX}/bin/generate-cli-docs
+      - if: unix
+        then:
+          - test ! -f ${PREFIX}/bin/generate-cli-docs
 
 
 about:
