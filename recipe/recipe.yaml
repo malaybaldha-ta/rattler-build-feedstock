@@ -1,68 +1,132 @@
 context:
-  name: rattler-build
-  version: "0.35.9"
+  version: 2.2.1
+  default_abi_level: 1.21
+  param: "verbose=1, label='full', tests=None"
+  extra: "extra_argv=['-nauto', '--timeout=3000', '--durations=50', '--maxfail=100']"
 
 package:
-  name: ${{ name }}
+  name: numpy
   version: ${{ version }}
 
 source:
-  url: https://github.com/prefix-dev/rattler-build/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 9b64c34f08426156d81c472a7d2f4fe15b8658d6c61f8e293b1f0682d18c6bfc
+  - url: https://github.com/numpy/numpy/releases/download/v${{ version }}/numpy-${{ version }}.tar.gz
+    sha256: 45681fd7128c8ad1c379f0ca0776a8b0c6583d2f69889ddac01559dfe4390918
 
 build:
-  script:
-    - if: unix
-      then:
-        # Unix recipe
-        - export OPENSSL_DIR="$PREFIX"
-        - cargo install --locked --bin rattler-build --root ${PREFIX} --path . --no-track
-        - cargo-bundle-licenses --format yaml --output ${SRC_DIR}/THIRDPARTY.yml
-      else:
-        # Win recipe
-        - cargo install --locked --bins --root %PREFIX% --path . --no-track
-        - if errorlevel 1 exit 1
-        - cargo-bundle-licenses --format yaml --output %SRC_DIR%/THIRDPARTY.yml
-        - if errorlevel 1 exit 1
-  number: 0
+  python:
+    entry_points:
+      - f2py = numpy.f2py.f2py2e:main  # [win]
+      - numpy-config = numpy._configtool:main
 
 requirements:
   build:
-    - ${{ compiler('rust') }}
-    - ${{ stdlib('c') }}
-    - cargo-bundle-licenses
+    - ${{ compiler('c') }}
+    - ${{ compiler('cxx') }}
+
+    # note: some `host` dependencies that run at build time (e.g., `cython`, `meson-python`)
+    #       should ideally be in `build` instead, this is because cross compilation of
+    #       Python packages in conda-forge uses `crossenv` rather than regular cross compilation.
   host:
-    - ${{ "openssl" if linux }}
+    # note: variant is injected here!
+    - python
+    - pip
+    - meson-python
+    - pkg-config
+    - python-build
+    - cython
+    - libblas
+    - libcblas
+    - liblapack
+
   run:
-    - ${{ "patchelf" if linux }}
+    - python
+  run_exports:
+    - numpy >=${{ default_abi_level }},<3.0.0a0
 
 tests:
   - script:
-      - rattler-build --help
-    # check that `bin/generate-cli-docs` is not present
-      - if: unix
-        then:
-          - test ! -f ${PREFIX}/bin/generate-cli-docs
+      - f2py -v
+      - numpy-config --cflags
+      - python -c "import sys; print(sys.executable)"
+      # - python -m ensurepip --default-pip
+      # - pip install pytest pytest-timeout pytest-xdist cython hypothesis meson pytz "setuptools<60.0.0" typing_extensions
+      # - pip install checks meson ninja
+      # - apt install build-essential python3-dev pkg-config -y
+      - python -c "import numpy, sys; sys.exit(not numpy.test(${{ param }}, ${{ extra }}))"
+
+    requirements:
+      run:
+        - pytest
+        - pytest-timeout
+        - pytest-xdist
+        - cython
+        - hypothesis
+        - meson
+        -
+        - pytz
+        - setuptools <60.0.0   # [py<=311]
+        # - setuptools           # [py>=312]
+        - typing_extensions
+        # some linux tests need a C/C++ compiler;
+        # extra f2py tests need a fortran compiler
+        - ${{ compiler('c') }}        # [unix]
+        - ${{ compiler('cxx') }}      # [unix]
+        - ${{ compiler('fortran') }}  # [linux]
+        # For some cython tests
+        - pkg-config
+
+  - python:
+      imports:
+        - numpy
+        # reference for public API is effectively PUBLIC_MODULES under
+        # https://github.com/numpy/numpy/blame/main/numpy/tests/test_public_api.py
+        - numpy.ctypeslib
+        - numpy.distutils           # [py<312]
+        - numpy.dtypes
+        - numpy.exceptions
+        - numpy.f2py
+        - numpy.fft
+        - numpy.lib
+        - numpy.lib.format
+        - numpy.lib.mixins
+        - numpy.lib.recfunctions
+        - numpy.lib.scimath
+        - numpy.lib.stride_tricks
+        - numpy.lib.npyio
+        - numpy.lib.introspect
+        - numpy.lib.array_utils
+        - numpy.linalg
+        - numpy.ma
+        - numpy.ma.extras
+        - numpy.ma.mrecords
+        - numpy.polynomial
+        - numpy.polynomial.chebyshev
+        - numpy.polynomial.hermite
+        - numpy.polynomial.hermite_e
+        - numpy.polynomial.laguerre
+        - numpy.polynomial.legendre
+        - numpy.polynomial.polynomial
+        - numpy.random
+        - numpy.testing
+        - numpy.testing.overrides
+        - numpy.typing
+        - numpy.typing.mypy_plugin
+        - numpy.version
+        # some private modules that were once upon a time
+        # determined to be useful packaging checks
+        - numpy.core.multiarray
+        - numpy.core.numeric
+        - numpy.core.umath
+        - numpy.linalg.lapack_lite
+        - numpy.random.mtrand
+
+
 
 
 about:
-  homepage: https://github.com/prefix-dev/rattler-build
-  summary: rattler-build is the universal conda package builder for Windows, macOS and Linux
-  description: |
-    The rattler-build tooling and library creates cross-platform relocatable binaries / packages 
-    from a simple recipe format.
-    The recipe format is heavily inspired by conda-build and boa, and the output of a regular
-    rattler-build run is a package that can be installed using mamba, conda or rattler.
+  homepage: http://numpy.org/
   license: BSD-3-Clause
-  license_file:
-    - LICENSE
-    - THIRDPARTY.yml
-    - CONDA_BUILD_LICENSE.txt
-  documentation: https://rattler.build
-
-extra:
-  recipe-maintainers:
-    - nichmor
-    - wolfv
-    - pavelzw
-    - '0xbe7a'
+  license_file: LICENSE.txt
+  summary: The fundamental package for scientific computing with Python.
+  documentation: https://numpy.org/doc/stable/
+  repository: https://github.com/numpy/numpy
