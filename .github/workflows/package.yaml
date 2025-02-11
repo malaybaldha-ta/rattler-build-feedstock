@@ -14,4 +14,4 @@ jobs:
     - name: Build conda package
       uses: prefix-dev/rattler-build-action@v0.2.30
       with:
-        build-args: --recipe ./recipe
+        recipe-path: ./recipe
