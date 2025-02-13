@@ -18,15 +18,17 @@ jobs:
             target-platform: win-64
 
     steps:
+    - uses: actions/checkout@v4
+
     - name: Set up MSVC environment
       shell: cmd
       run: |
         @echo off
+        echo Finding Visual Studio installation...
         for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
-          call "%%i\VC\Auxiliary\Build\vcvars64.bat"
+          echo Found Visual Studio at: %%i
+          call "%%i\Common7\Tools\VsDevCmd.bat" -arch=x64
         )
-
-    - uses: actions/checkout@v4
 
     - name: Verify MSVC is available
       shell: cmd
