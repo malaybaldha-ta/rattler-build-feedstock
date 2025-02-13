@@ -18,6 +18,11 @@ jobs:
             target-platform: win-64
 
     steps:
+    - name: Set up MSVC environment
+      shell: cmd
+      run: |
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+
     - uses: actions/checkout@v4
     - name: Build conda package
       uses: prefix-dev/rattler-build-action@v0.2.30
