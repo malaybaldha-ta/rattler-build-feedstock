@@ -21,9 +21,19 @@ jobs:
     - name: Set up MSVC environment
       shell: cmd
       run: |
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+        @echo off
+        for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
+          call "%%i\VC\Auxiliary\Build\vcvars64.bat"
+        )
 
     - uses: actions/checkout@v4
+
+    - name: Verify MSVC is available
+      shell: cmd
+      run: |
+        where cl
+        cl.exe /?
+
     - name: Build conda package
       uses: prefix-dev/rattler-build-action@v0.2.30
       with:
@@ -31,4 +41,3 @@ jobs:
         recipe-path: ./recipe
         artifact-name: package-${{ matrix.target-platform }}
         build-args: --target-platform ${{ matrix.target-platform }}${{ matrix.target-platform == 'linux-aarch64' && ' --no-test' || '' }}
-
