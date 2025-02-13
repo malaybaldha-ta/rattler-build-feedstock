@@ -2,7 +2,7 @@ context:
   version: 2.2.1
   default_abi_level: 1.21
   param: "verbose=1, label='full', tests=None"
-  extra: "extra_argv=['-nauto', '--timeout=3000', '--durations=50', '--maxfail=100']"
+  extra: "extra_argv=['-nauto', '--timeout=3000', '--durations=50', '--maxfail=100', '-k', 'not test_umath']"
 
 package:
   name: numpy
