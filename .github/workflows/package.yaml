@@ -9,6 +9,11 @@ jobs:
   build:
     name: Build package
     runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: cmd  # Set default shell to cmd for consistency
+
     strategy:
       matrix:
         include:
@@ -28,7 +33,6 @@ jobs:
       # Windows-specific setup for MSVC
       - name: Set up MSVC environment (Windows only)
         if: runner.os == 'Windows'
-        shell: cmd
         run: |
           @echo off
           echo Locating Visual Studio installation...
