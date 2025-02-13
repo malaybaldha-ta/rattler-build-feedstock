@@ -8,31 +8,26 @@ on:
 jobs:
   build:
     name: Build package
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          # - os: ubuntu-latest
-          #   target-platform: linux-64
-          - os: windows-latest
-            target-platform: win-64
-
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up MSVC environment
+    - name: Debug Visual Studio Installation
+      shell: cmd
+      run: |
+        echo "Checking Visual Studio Installation..."
+        "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -all -prerelease
+
+    - name: Set up MSVC environment manually
       shell: cmd
       run: |
         @echo off
-        echo Finding Visual Studio installation...
-        for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
+        echo Locating Visual Studio installation...
+        for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do (
           echo Found Visual Studio at: %%i
           call "%%i\Common7\Tools\VsDevCmd.bat" -arch=x64
         )
-
-    - name: Verify MSVC is available
-      shell: cmd
-      run: |
+        echo "Verifying MSVC setup..."
         where cl
         cl.exe /?
 
