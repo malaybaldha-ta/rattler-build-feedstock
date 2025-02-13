@@ -64,8 +64,8 @@ jobs:
               echo "Activating Conda environment..."
               call C:\Miniforge\condabin\conda.bat activate build-env
               echo "Building package..."
-              conda install rattler-build
-              rattler-build --recipe ./recipe
+              conda install rattler-build -y
+              rattler-build build --recipe ./recipe
             )
           )
 
