@@ -30,22 +30,48 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Windows-specific setup for MSVC
-      - name: Set up MSVC environment (Windows only)
+      # Install Miniforge (Conda)
+      - name: Set up Miniforge
+        if: runner.os == 'Windows'
+        run: |
+          @echo off
+          echo Installing Miniforge...
+          curl -L -o Miniforge.exe https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Windows-x86_64.exe
+          start /wait Miniforge.exe /InstallationType=JustMe /RegisterPython=0 /S /D=C:\Miniforge
+          echo "Conda initialized!"
+          call C:\Miniforge\condabin\conda.bat init cmd.exe
+
+      # Create Conda environment and install rattler-build
+      - name: Create Conda environment
+        if: runner.os == 'Windows'
+        run: |
+          @echo off
+          call C:\Miniforge\condabin\conda.bat create -y -n build-env python=3.10 rattler-build
+          echo "Conda environment created!"
+
+      # Set up MSVC and build package
+      - name: Set up MSVC and Build Conda Package
         if: runner.os == 'Windows'
         run: |
           @echo off
           echo Locating Visual Studio installation...
           for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do (
             echo Found Visual Studio at: %%i
-            call "%%i\Common7\Tools\VsDevCmd.bat" -arch=x64
+            call "%%i\Common7\Tools\VsDevCmd.bat" -arch=x64 && (
+              echo "Verifying MSVC setup..."
+              where cl
+              cl.exe /?
+              echo "Activating Conda environment..."
+              call C:\Miniforge\condabin\conda.bat activate build-env
+              echo "Building package..."
+              rattler-build --target-platform ${{ matrix.target-platform }}${{ matrix.target-platform == 'linux-aarch64' && ' --no-test' || '' }}
+            )
           )
-          echo "Verifying MSVC setup..."
-          where cl
-          cl.exe /?
+
 
       - name: Build conda package
         uses: prefix-dev/rattler-build-action@v0.2.30
+        if: runner.os != 'Windows'
         with:
           # needs to be unique for each matrix entry
           recipe-path: ./recipe
