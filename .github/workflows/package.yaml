@@ -69,6 +69,17 @@ jobs:
             )
           )
 
+      - name: List build output
+        run: |
+          echo "Listing build directory..."
+          dir /s /b
+
+      - name: Upload built package
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-conda-package
+          path: '**/*.conda'  # Adjust the path if needed
+
 
       - name: Build conda package
         uses: prefix-dev/rattler-build-action@v0.2.30
