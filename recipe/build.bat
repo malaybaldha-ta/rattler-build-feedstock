@@ -1,14 +1,18 @@
-@REM mkdir builddir
+@echo on
+for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
+    call "%%i\VC\Auxiliary\Build\vcvars64.bat"
+)
 
-@REM %PYTHON% -m build -w -n -x ^
-@REM     -Cbuilddir=builddir ^
-@REM     -Csetup-args=-Dblas=blas ^
-@REM     -Csetup-args=-Dlapack=lapack
-@REM if %ERRORLEVEL% neq 0 exit 1
+mkdir builddir
 
-@REM :: `pip install dist\numpy*.whl` does not work on windows,
-@REM :: so use a loop; there's only one wheel in dist/ anyway
-@REM for /f %%f in ('dir /b /S .\dist') do (
-@REM     pip install %%f
-@REM     if %ERRORLEVEL% neq 0 exit 1
-@REM )
+%PYTHON% -m build -w -n -x ^
+    -Cbuilddir=builddir ^
+    -Csetup-args=-Dbackend=ninja ^
+    -Csetup-args=-Dblas=blas ^
+    -Csetup-args=-Dlapack=lapack
+if %ERRORLEVEL% neq 0 exit 1
+
+for /f %%f in ('dir /b /S .\dist') do (
+    pip install %%f
+    if %ERRORLEVEL% neq 0 exit 1
+)
