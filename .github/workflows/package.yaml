@@ -48,6 +48,7 @@ jobs:
           @echo off
           call C:\Miniforge\condabin\conda.bat create -y -n build-env python=3.10 rattler-build
           echo "Conda environment created!"
+          wmic os get osarchitecture
 
       # Set up MSVC and build package
       - name: Set up MSVC and Build Conda Package
