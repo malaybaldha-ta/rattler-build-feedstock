@@ -13,6 +13,24 @@ source:
   # - path: C:\Users\malay.nileshbhai\recipes\rattler-build-feedstock\tarball\numpy-2.2.1.tar.gz
   - url: https://github.com/numpy/numpy/releases/download/v${{ version }}/numpy-${{ version }}.tar.gz
     sha256: 45681fd7128c8ad1c379f0ca0776a8b0c6583d2f69889ddac01559dfe4390918
+  - target_directory: numpy/_core/src/highway
+    git: https://github.com/google/highway.git
+    rev: 68b0fdebffb14f3b8473fed1c33ce368efc431e7
+  - target_directory: numpy/_core/src/common/pythoncapi-compat
+    git: https://github.com/python/pythoncapi-compat.git
+    rev: 0f1d42a10a3f594ad48894912396df31b2c2d55d
+  - target_directory: numpy/_core/src/npysort/x86-simd-sort
+    git: https://github.com/intel/x86-simd-sort.git
+    rev: 9a1b616d5cd4eaf49f7664fb86ccc1d18bad2b8d
+  - target_directory: numpy/_core/src/umath/svml
+    git: https://github.com/numpy/SVML.git
+    rev: 32bf2a98420762a63ab418aaa0a7d6e17eb9627a
+  - target_directory: numpy/fft/pocketfft
+    git: https://github.com/mreineck/pocketfft.git
+    rev: 33ae5dc94c9cdc7f1c78346504a85de87cadaa12
+  - target_directory: vendored-meson/meson
+    git: https://github.com/numpy/meson.git
+    rev: 0d93515fb826440d19707eee47fd92655fe2f166
 
 build:
   python:
@@ -45,37 +63,10 @@ requirements:
   run_exports:
     - numpy >=${{ default_abi_level }},<3.0.0a0
 
-# tests:
-#   - python:
-#       imports:
-#         - numpy
-#         - numpy.fft
-#         - numpy.linalg
-#         - numpy.random
-#         - numpy.ctypeslib
-
-#   - script:
-#     - f2py -v
-#     - numpy-config --cflags
-
-# about:
-#   homepage: http://numpy.org/
-#   license: BSD-3-Clause
-#   license_file: LICENSE.txt
-#   summary: The fundamental package for scientific computing with Python.
-#   documentation: https://numpy.org/doc/stable/
-#   repository: https://github.com/numpy/numpy
-
-
 tests:
   - script:
       - f2py -v
       - numpy-config --cflags
-      - python -c "import sys; print(sys.executable)"
-      # - python -m ensurepip --default-pip
-      # - pip install pytest pytest-timeout pytest-xdist cython hypothesis meson pytz "setuptools<60.0.0" typing_extensions
-      # - pip install checks meson ninja
-      # - apt install build-essential python3-dev pkg-config -y
       - python -c "import numpy, sys; sys.exit(not numpy.test(${{ param }}, ${{ extra }}))"
 
     requirements:
@@ -92,9 +83,9 @@ tests:
         - typing_extensions
         # some linux tests need a C/C++ compiler;
         # extra f2py tests need a fortran compiler
-        # - ${{ compiler('c') }}        # [unix]
-        # - ${{ compiler('cxx') }}      # [unix]
-        # - ${{ compiler('fortran') }}  # [linux]
+        - ${{ compiler('c') }}        # [unix]
+        - ${{ compiler('cxx') }}      # [unix]
+        - ${{ compiler('fortran') }}  # [linux]
         # For some cython tests
         - pkg-config
 
@@ -140,7 +131,7 @@ tests:
         - numpy.core.multiarray
         - numpy.core.numeric
         # Umath test failing due to compiler issue with handling Floating-Point Precision
-        # - numpy.core.umath
+        - numpy.core.umath
         - numpy.linalg.lapack_lite
         - numpy.random.mtrand
 
