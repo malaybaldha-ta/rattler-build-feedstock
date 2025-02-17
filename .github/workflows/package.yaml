@@ -46,7 +46,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           @echo off
-          call C:\Miniforge\condabin\conda.bat create -y -n build-env python=3.10 rattler-build
+          call C:\Miniforge\condabin\conda.bat create -y -n build-env python=3.11 rattler-build
           echo "Conda environment created!"
           wmic os get osarchitecture
 
@@ -56,7 +56,7 @@ jobs:
         run: |
           @echo off
           echo Locating Visual Studio installation...
-          for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do (
+          for /f "usebackq tokens=*" %%i in (`"C:\Program Files (x64)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do (
             echo Found Visual Studio at: %%i
             call "%%i\Common7\Tools\VsDevCmd.bat" -arch=x64 && (
               echo "Verifying MSVC setup..."
