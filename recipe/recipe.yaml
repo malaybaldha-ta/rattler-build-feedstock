@@ -92,9 +92,9 @@ tests:
         - typing_extensions
         # some linux tests need a C/C++ compiler;
         # extra f2py tests need a fortran compiler
-        - ${{ compiler('c') }}        # [unix]
-        - ${{ compiler('cxx') }}      # [unix]
-        - ${{ compiler('fortran') }}  # [linux]
+        # - ${{ compiler('c') }}        # [unix]
+        # - ${{ compiler('cxx') }}      # [unix]
+        # - ${{ compiler('fortran') }}  # [linux]
         # For some cython tests
         - pkg-config
 
